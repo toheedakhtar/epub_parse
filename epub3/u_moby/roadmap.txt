@@ -1,0 +1,9 @@
+- every epub must have a META-INF dir which will have conatiner.xml
+	[x] check if true
+- container.xml has path to 'package.ocf' which has title and navigation.
+
+29 / June / 2024
+[x] extract epub file to a dir
+[x] fetch .ocf file from Meta-INF directory
+[] structure program dir paths
+[] try on other pdf and get .ocf
