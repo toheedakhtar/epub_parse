@@ -4,18 +4,23 @@ import xml.etree.ElementTree as ET
 
 # getting to ocf file
 
-#epub_file = 'moby-dick.epub'
-#epub_name = epub_file.split('.')[0]
+epub_path = '/home/toheed/Projects/epub_parse/linear-algebra.epub'
+epub_name = epub_path.split('/')[-1].split('.')[0]
+
 # unzipping epub file
 
-#with ZipFile(epub_file) as zipobj:
-#    print(zipobj.extractall(path = str(epub_name)))
-dir_name = 'moby-dick'
+with ZipFile(epub_path) as zipobj:
+    zipobj.extractall(path = str(epub_name))
+
+#dir_name = 'moby-dick'          # epub dir  
+
+dir_name = epub_name
+
 md_dir = os.listdir(dir_name)
 if 'META-INF' in md_dir:
     os.chdir(dir_name + '/META-INF')
 
-    curr_dir = os.getcwd()
+    curr_dir = os.getcwd()      #inside META-INF
     #print(curr_dir)
     # print(os.listdir(curr_dir))
 
