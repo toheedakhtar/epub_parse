@@ -62,9 +62,9 @@ namespaces = {
 
 # Find metadata element
 metadata = root.find('opf:metadata', namespaces)
-
+print('\n\n')
 # Extract title, creator, identifier
-print('PRINTING METADATA.............\n\n\n')
+print('PRINTING METADATA.............\n')
 title = metadata.find('dc:title', namespaces).text
 creator = metadata.find('dc:creator', namespaces).text
 identifier = metadata.find('dc:identifier', namespaces).text
@@ -73,12 +73,11 @@ identifier = metadata.find('dc:identifier', namespaces).text
 print(f"Title: {title}")
 print(f"Creator: {creator}")
 print(f"Identifier: {identifier}")
-print('\n\n\n\n')
-
+print('\n\n')
 
 
 # parsing manifest 
-print('PRINTING MANIFEST..........\n\n\n')
+print('PRINTING MANIFEST..........\n')
 # finding the manifest section
 manifest = root.find('opf:manifest', namespaces)
 
@@ -90,6 +89,27 @@ for item in manifest:
     properties = item.attrib.get('properties', '')
 
     print(f"Item ID: {item_id}, Href: {href}, Media Type: {media_type}, Properties: {properties}")
+
+print('\n\n')
+
+# parsing spine 
+print('PRINTING SPINE.......\n')
+spine = root.find('opf:spine', namespaces)
+
+for itemref in spine:
+    idref = itemref.attrib['idref']
+    linear = itemref.attrib.get('linear', 'yes')  # default value for linear attribute is 'yes'
+
+    print(f"Itemref ID: {idref}, Linear: {linear}")
+
+
+
+
+
+
+
+
+
 
 
 
