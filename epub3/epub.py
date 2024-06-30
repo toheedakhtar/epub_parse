@@ -47,5 +47,30 @@ opf_path_dir = main_path + opf_path_extract          # from main path
 #print(opf_path_dir)
 
 with open(opf_path_dir) as opf:
-    data = opf.read()
-    print(data)
+    data = opf.read()                       # opf xml
+
+
+
+# parsing metadata (title, creator, id) from opf
+
+root = ET.fromstring(data)
+
+# Define namespaces
+namespaces = {
+    'opf': 'http://www.idpf.org/2007/opf',
+    'dc': 'http://purl.org/dc/elements/1.1/'
+}
+
+# Find metadata element
+metadata = root.find('opf:metadata', namespaces)
+
+# Extract title, creator, identifier
+title = metadata.find('dc:title', namespaces).text
+creator = metadata.find('dc:creator', namespaces).text
+identifier = metadata.find('dc:identifier', namespaces).text
+
+# Print metadata
+print(f"Title: {title}")
+print(f"Creator: {creator}")
+print(f"Identifier: {identifier}")
+
