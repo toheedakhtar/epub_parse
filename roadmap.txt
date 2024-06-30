@@ -15,13 +15,15 @@
 	|		  |
 	-------------------
 
-29 / June / 2024
+29 / June / 2024  -- (knowing EPUB)
+
 [x] extract epub file to a dir
 [x] fetch .ocf file from Meta-INF directory
 [x] structure program dir paths
 [x] try on other epub and get .opf
 
-30/ June / 2024
+30/ June / 2024 -- (parsing EPUB dat : metadata, spine, manifest)
+
 [x] display content of .opf
 [x] rename path / dir to proper names
 [x] get title, creator .. from opf
