@@ -2,8 +2,24 @@
 	[x] check if true
 - container.xml has path to 'package.ocf' which has title and navigation.
 
+	-------------------
+	|	epub	  |
+	|-----------------|
+	| META-INF-> xml  |
+	| xml -> .ocf	  |
+	|		  | 
+	|		  |
+	|		  |
+	|		  |
+	|		  |
+	|		  |
+	-------------------
+
 29 / June / 2024
 [x] extract epub file to a dir
 [x] fetch .ocf file from Meta-INF directory
 [x] structure program dir paths
-[x] try on other epub and get .ocf
+[x] try on other epub and get .opf
+
+30/ June / 2024
+[] display content of .opf
