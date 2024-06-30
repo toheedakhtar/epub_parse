@@ -22,4 +22,5 @@
 [x] try on other epub and get .opf
 
 30/ June / 2024
-[] display content of .opf
+[x] display content of .opf
+[] rename path / dir to proper names

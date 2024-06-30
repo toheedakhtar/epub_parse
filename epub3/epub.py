@@ -4,6 +4,7 @@ import xml.etree.ElementTree as ET
 
 # getting to ocf file
 
+main_path = '/home/toheed/Projects/epub_parse/epub3/'
 epub_path = '/home/toheed/Projects/epub_parse/moby-dick.epub'
 epub_name = epub_path.split('/')[-1].split('.')[0]
 
@@ -31,6 +32,7 @@ if 'META-INF' in md_dir:
             with open(file) as f:
                 data = f.read()
 
+
 # getting .ocf path from container
 root = ET.fromstring(str(data))
 # Define the namespace
@@ -39,5 +41,12 @@ namespace = {'ns': 'urn:oasis:names:tc:opendocument:xmlns:container'}
 # Find the rootfile element and extract the full-path attribute value
 full_path = root.find('.//ns:rootfile', namespace).attrib['full-path']
 
-ocf_path = dir_name + '/' + full_path
-print(ocf_path)
+opf_path = dir_name + '/' + full_path
+print(opf_path)
+
+opf_dir = main_path + opf_path
+print(opf_dir)
+
+with open(opf_dir) as opf:
+    data = opf.read()
+    print(data)
