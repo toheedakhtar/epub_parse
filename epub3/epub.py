@@ -50,7 +50,6 @@ with open(opf_path_dir) as opf:
     data = opf.read()                       # opf xml
 
 
-
 # parsing metadata (title, creator, id) from opf
 
 root = ET.fromstring(data)
@@ -65,6 +64,7 @@ namespaces = {
 metadata = root.find('opf:metadata', namespaces)
 
 # Extract title, creator, identifier
+print('PRINTING METADATA.............\n\n\n')
 title = metadata.find('dc:title', namespaces).text
 creator = metadata.find('dc:creator', namespaces).text
 identifier = metadata.find('dc:identifier', namespaces).text
@@ -73,4 +73,25 @@ identifier = metadata.find('dc:identifier', namespaces).text
 print(f"Title: {title}")
 print(f"Creator: {creator}")
 print(f"Identifier: {identifier}")
+print('\n\n\n\n')
+
+
+
+# parsing manifest 
+print('PRINTING MANIFEST..........\n\n\n')
+# finding the manifest section
+manifest = root.find('opf:manifest', namespaces)
+
+# Iterate over each item in the manifest
+for item in manifest:
+    href = item.attrib['href']
+    item_id = item.attrib['id']
+    media_type = item.attrib['media-type']
+    properties = item.attrib.get('properties', '')
+
+    print(f"Item ID: {item_id}, Href: {href}, Media Type: {media_type}, Properties: {properties}")
+
+
+
+
 
