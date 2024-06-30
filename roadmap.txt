@@ -23,4 +23,10 @@
 
 30/ June / 2024
 [x] display content of .opf
-[] rename path / dir to proper names
+[x] rename path / dir to proper names
+[x] get title, creator .. from opf
+[x] try getting title, creator, from diff epu
+[x] parse manifest items
+[x] try parsing manifest of other epub
+[x] parse spine
+[x] parse spine of other epub

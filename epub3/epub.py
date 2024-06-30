@@ -5,7 +5,7 @@ import xml.etree.ElementTree as ET
 # getting to ocf file
 
 main_path = '/home/toheed/Projects/epub_parse/epub3/'   # where epub is stored
-epub_path = '/home/toheed/Projects/epub_parse/linear-algebra.epub'   # epub path
+epub_path = '/home/toheed/Projects/epub_parse/moby-dick.epub'   # epub path
 epub_name = epub_path.split('/')[-1].split('.')[0]      # epub name
 
 # unzipping epub file
