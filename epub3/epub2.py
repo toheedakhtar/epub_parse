@@ -49,10 +49,7 @@ def get_opf_data(opf_path):
         opf_data = opf.read()
         return opf_data
 
-def get_metadata(opf_data, namespaces):
-    
-    root = ET.fromstring(opf_data)
-
+def get_metadata(opf_data, root, namespaces):
 
     # parsing metadata elements
     metadata = root.find('opf:metadata', namespaces)
@@ -63,8 +60,7 @@ def get_metadata(opf_data, namespaces):
     print(f"Title : {title}\nCreator : {creator}\nIdentifier : {identifier}")
 
     
-def get_manifest(opf_data, namespaces):
-    root = ET.fromstring(opf_data)
+def get_manifest(opf_data, root , namespaces):
     manifest = root.find('opf:manifest', namespaces)
 
     for item in manifest:
@@ -74,15 +70,32 @@ def get_manifest(opf_data, namespaces):
         properties = item.attrib.get('properties', '')
  
         print(f"Item ID: {item_id}, Href: {href}, Media Type: {media_type}, Properties: {properties}")
-        
+
+
+def get_spine(opf_data, root, namespaces):
+
+    spine = root.find('opf:spine', namespaces)
+
+    for item in spine:
+        id_ref = item.attrib['idref']
+
+        print(id_ref)
+
+
+# func calls 
 opf_path = get_opf_path(epub_path)
 opf_data = get_opf_data(opf_path)
+root = ET.fromstring(opf_data)
 
 print('Metadata : \n')
-get_metadata(opf_data, namespaces)
+get_metadata(opf_data, root, namespaces)
 
 print('\nManifeset')
-get_manifest(opf_data, namespaces)
+get_manifest(opf_data, root , namespaces)
+
+print('\nSpine')
+get_spine(opf_data, root, namespaces)
+
 
 '''
 # getting to ocf file
