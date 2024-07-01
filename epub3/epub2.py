@@ -9,6 +9,7 @@ if not epub_path:
 #namespaces or xml parsing of ocf data
 namespaces = {'opf': 'http://www.idpf.org/2007/opf','dc': 'http://purl.org/dc/elements/1.1/'}
 
+
 # fetching opf from epub's META-INF
 def get_opf_path(path):
     epub_name = path.split('/')[-1].split('.')[0]
@@ -68,7 +69,6 @@ def get_metadata(opf_data, root, namespaces):
             }
 
     metadata_items.append(metadata_item)
-    #print(metadata_item)
     
     return metadata_items
     
@@ -118,7 +118,7 @@ def get_spine(opf_data, root, namespaces):
                     'id_ref': id_ref,
                     }
             spine_items.append(spine_item)
-            #print(spine_item)
+            
 
         
 def get_text(metadata, manifest, content_path):
@@ -145,86 +145,13 @@ def get_text(metadata, manifest, content_path):
                     print('no <chapter_text>')
 
 
-    pass
 
 # func calls 
 opf_path, content_path = get_opf_path(epub_path)
-print(content_path)
 opf_data = get_opf_data(opf_path)
 root = ET.fromstring(opf_data)
 
 metadata = get_metadata(opf_data, root, namespaces)
 manifest = get_manifest(opf_data, root , namespaces)
 spine = get_spine(opf_data, root, namespaces)
-
 get_text(metadata, manifest, content_path)
-
-
-'''
-# parsing manifest 
-# finding the manifest section
-manifest = root.find('opf:manifest', namespaces)
-
-# Iterate over each item in the manifest
-for item in manifest:
-    href = item.attrib['href']
-    item_id = item.attrib['id']
-    media_type = item.attrib['media-type']
-    properties = item.attrib.get('properties', '')
-
-    if media_type == 'application/xhtml+xml':
-        ch_path = content_dir + '/' + href
-        print(ch_path)
-        print('\n')
-        with open(ch_path) as xhtml_f:
-            ch_text = xhtml_f.read()
-        
-        #parsing text from xhtml
-
-        root = ET.fromstring(ch_text)
-
-        # finding the body element
-        body = root.find('.//{http://www.w3.org/1999/xhtml}body')
-
-        # If body found
-        if body is not None:
-            inner_text = ET.tostring(body, encoding='unicode', method='text')
-            print(inner_text)
-        else:
-            print("No <body> element found in the XML content.")
-        
-
-
-        print('\n')
-    
-#        break;
-    # print(f"Item ID: {item_id}, Href: {href}, Media Type: {media_type}, Properties: {properties}")
-
-    # testing xhtml rendering 
-    
-
-print('\n\n')
-
-# parsing spine 
-#print('PRINTING SPINE.......\n')
-#spine = root.find('opf:spine', namespaces)
-
-#for itemref in spine:
-#   idref = itemref.attrib['idref']
-#    linear = itemref.attrib.get('linear', 'yes')  # default value for linear attribute is 'yes'
-
-#    print(f"Itemref ID: {idref}, Linear: {linear}")
-
-
-'''
-
-
-
-
-
-
-
-
-
-
-
