@@ -131,7 +131,20 @@ def get_text(metadata, manifest, content_path):
     #priting chapter text
     for item in manifest:
         if 'media_type' in item and item['media_type'] == 'application/xhtml+xml':
-            print(content_path + item['href'])
+            chapter_url = content_path + item['href']
+
+            with open(chapter_url) as chapter:
+                ch_text = chapter.read()
+                root = ET.fromstring(ch_text)
+                body = root.find('.//{http://www.w3.org/1999/xhtml}body')
+
+                if body is not None:
+                    inner_text = ET.tostring(body, encoding='unicode', method='text')
+                    print(inner_text)
+                else:
+                    print('no <chapter_text>')
+
+
     pass
 
 # func calls 

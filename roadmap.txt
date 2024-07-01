@@ -47,3 +47,4 @@
 
 [x] check code for other epub
 [x] store all data in proper format (list of dicts)
+[x] get proper text of epub
