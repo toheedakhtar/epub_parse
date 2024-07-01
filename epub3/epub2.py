@@ -38,8 +38,12 @@ def get_opf_path(path):
                 
         # exit from META-INF to parent-dir where epub is extracted
         extr_dir = os.path.dirname(os.getcwd()) # where epub is extracted / unzipped
-        opf_path = extr_dir + '/' +full_path   
-        return opf_path
+        opf_path = extr_dir + '/' +full_path   # path to package.opf file
+        
+        sep = '/'
+        content_path = sep.join(opf_path.split('/')[:-1]) + '/'
+
+        return opf_path , content_path
 
     else:
         print('no META-INF directory')
@@ -64,12 +68,11 @@ def get_metadata(opf_data, root, namespaces):
             }
 
     metadata_items.append(metadata_item)
-    print(metadata_item)
-
-
-    #print(f"Title : {title}\nCreator : {creator}\nIdentifier : {identifier}")
-
+    #print(metadata_item)
     
+    return metadata_items
+    
+
 def get_manifest(opf_data, root , namespaces):
     manifest_items = []
 
@@ -89,9 +92,10 @@ def get_manifest(opf_data, root , namespaces):
                 }
 
         manifest_items.append(item_data)
-        print(item_data)
-        #print(f"Item ID: {item_id}, Href: {href}, Media Type: {media_type}, Properties: {properties}")
+        #print(item_data)
+    
     return manifest_items
+
 
 def get_spine(opf_data, root, namespaces):
     spine_items = []
@@ -107,34 +111,40 @@ def get_spine(opf_data, root, namespaces):
                     'linear' : linear
                     }
             spine_items.append(spine_item)
-            print(spine_item)
+            #print(spine_item)
         else:
             id_ref = item.attrib['idref']    
             spine_item = {
                     'id_ref': id_ref,
                     }
             spine_items.append(spine_item)
-            print(spine_item)
+            #print(spine_item)
 
         
-def get_text():
+def get_text(metadata, manifest, content_path):
+    #printing info about epubs
+    #for item in metadata:
+    #    for key, value in item.items():
+    #        print(f"{key.capitalize()} : {value}")
+
+    
+    #priting chapter text
+    for item in manifest:
+        if 'media_type' in item and item['media_type'] == 'application/xhtml+xml':
+            print(content_path + item['href'])
     pass
 
-
-
 # func calls 
-opf_path = get_opf_path(epub_path)
+opf_path, content_path = get_opf_path(epub_path)
+print(content_path)
 opf_data = get_opf_data(opf_path)
 root = ET.fromstring(opf_data)
 
-print('Metadata : \n')
-get_metadata(opf_data, root, namespaces)
+metadata = get_metadata(opf_data, root, namespaces)
+manifest = get_manifest(opf_data, root , namespaces)
+spine = get_spine(opf_data, root, namespaces)
 
-print('\nManifeset')
-get_manifest(opf_data, root , namespaces)
-
-print('\nSpine')
-get_spine(opf_data, root, namespaces)
+get_text(metadata, manifest, content_path)
 
 
 '''
