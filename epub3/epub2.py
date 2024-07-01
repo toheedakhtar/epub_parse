@@ -6,6 +6,9 @@ epub_path = "/home/toheed/Projects/epub_parse/linear-algebra.epub"
 if not epub_path:
     epub_path = str(input('Input ePub path: '))   
 
+#namespaces or xml parsing of ocf data
+namespaces = {'opf': 'http://www.idpf.org/2007/opf','dc': 'http://purl.org/dc/elements/1.1/'}
+
 # fetching opf from epub's META-INF
 def get_opf_path(path):
     epub_name = path.split('/')[-1].split('.')[0]
@@ -34,23 +37,22 @@ def get_opf_path(path):
         full_path = root.find('.//ns:rootfile', namespace).attrib['full-path'] 
                 
         # exit from META-INF to parent-dir where epub is extracted
-        extr_dir = os.path.dirname(os.getcwd())
-        
-        return extr_dir, full_path 
+        extr_dir = os.path.dirname(os.getcwd()) # where epub is extracted / unzipped
+        opf_path = extr_dir + '/' +full_path   
+        return opf_path
 
     else:
         print('no META-INF directory')
 
-
-def get_metadata(extr_dir , full_path):
-    opf_path = extr_dir + '/' + full_path
-
+def get_opf_data(opf_path):
     with open(opf_path) as opf:
         opf_data = opf.read()
+        return opf_data
+
+def get_metadata(opf_data, namespaces):
     
     root = ET.fromstring(opf_data)
-    # Define namespaces
-    namespaces = {'opf': 'http://www.idpf.org/2007/opf','dc': 'http://purl.org/dc/elements/1.1/'}
+
 
     # parsing metadata elements
     metadata = root.find('opf:metadata', namespaces)
@@ -61,9 +63,26 @@ def get_metadata(extr_dir , full_path):
     print(f"Title : {title}\nCreator : {creator}\nIdentifier : {identifier}")
 
     
+def get_manifest(opf_data, namespaces):
+    root = ET.fromstring(opf_data)
+    manifest = root.find('opf:manifest', namespaces)
 
-extr_dir, full_path = get_opf_path(epub_path)
-get_metadata(extr_dir , full_path)
+    for item in manifest:
+        href = item.attrib['href']
+        item_id = item.attrib['id']
+        media_type = item.attrib['media-type']
+        properties = item.attrib.get('properties', '')
+ 
+        print(f"Item ID: {item_id}, Href: {href}, Media Type: {media_type}, Properties: {properties}")
+        
+opf_path = get_opf_path(epub_path)
+opf_data = get_opf_data(opf_path)
+
+print('Metadata : \n')
+get_metadata(opf_data, namespaces)
+
+print('\nManifeset')
+get_manifest(opf_data, namespaces)
 
 '''
 # getting to ocf file
