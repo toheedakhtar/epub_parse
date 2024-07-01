@@ -50,17 +50,29 @@ def get_opf_data(opf_path):
         return opf_data
 
 def get_metadata(opf_data, root, namespaces):
-
+    metadata_items = []
     # parsing metadata elements
     metadata = root.find('opf:metadata', namespaces)
     title = metadata.find('dc:title', namespaces).text
     creator = metadata.find('dc:creator', namespaces).text
     identifier = metadata.find('dc:identifier',namespaces).text
+    
+    metadata_item = {
+            'title':title,
+            'creator':creator,
+            'identifier': identifier
+            }
 
-    print(f"Title : {title}\nCreator : {creator}\nIdentifier : {identifier}")
+    metadata_items.append(metadata_item)
+    print(metadata_item)
+
+
+    #print(f"Title : {title}\nCreator : {creator}\nIdentifier : {identifier}")
 
     
 def get_manifest(opf_data, root , namespaces):
+    manifest_items = []
+
     manifest = root.find('opf:manifest', namespaces)
 
     for item in manifest:
@@ -68,24 +80,46 @@ def get_manifest(opf_data, root , namespaces):
         item_id = item.attrib['id']
         media_type = item.attrib['media-type']
         properties = item.attrib.get('properties', '')
- 
-        print(f"Item ID: {item_id}, Href: {href}, Media Type: {media_type}, Properties: {properties}")
+        
+        item_data = {
+                'href' : href,
+                'item_id': item_id,
+                'media_type' : media_type,
+                'properties' : properties
+                }
 
+        manifest_items.append(item_data)
+        print(item_data)
+        #print(f"Item ID: {item_id}, Href: {href}, Media Type: {media_type}, Properties: {properties}")
+    return manifest_items
 
 def get_spine(opf_data, root, namespaces):
-
+    spine_items = []
+    
     spine = root.find('opf:spine', namespaces)
 
     for item in spine:
         if 'linear' in item.keys() :
             id_ref = item.attrib['idref']
             linear = item.attrib['linear']
-            print(id_ref, linear)
+            spine_item = {
+                    'id_ref' : id_ref,
+                    'linear' : linear
+                    }
+            spine_items.append(spine_item)
+            print(spine_item)
         else:
             id_ref = item.attrib['idref']    
-            print(id_ref)
+            spine_item = {
+                    'id_ref': id_ref,
+                    }
+            spine_items.append(spine_item)
+            print(spine_item)
 
         
+def get_text():
+    pass
+
 
 
 # func calls 
@@ -104,34 +138,6 @@ get_spine(opf_data, root, namespaces)
 
 
 '''
-# getting to ocf file
-path = '/home/toheed/Projects/epub_parse/epub3/'   # where epub is stored
-epub_path = '/home/toheed/Projects/epub_parse/linear-algebra.epub'   # epub path
-epub_name = epub_path.split('/')[-1].split('.')[0]      # epub name
-
-# unzipping epub file
-
-with ZipFile(epub_path) as zipobj:
-    zipobj.extractall(path = str(epub_name))
-
-dir_name = epub_name            # where epub is extracted , rn where epub is
-
-md_dir = os.listdir(dir_name)
-if 'META-INF' in md_dir:
-    os.chdir(dir_name + '/META-INF')
-
-    curr_dir = os.getcwd()      #inside META-INF
-    #print(curr_dir)
-    # print(os.listdir(curr_dir))
-
-    for file in os.listdir(curr_dir):
-        end = file.split('.')
-        if end[1] == 'xml':
-            # print(file)    # container.xml
-            with open(file) as f:
-                data = f.read()
-
-
 # parsing manifest 
 # finding the manifest section
 manifest = root.find('opf:manifest', namespaces)

@@ -46,4 +46,4 @@
 	[x] spine
 
 [x] check code for other epub
-[] all text of epub
+[x] store all data in proper format (list of dicts)
