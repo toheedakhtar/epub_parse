@@ -2,7 +2,7 @@ from zipfile import ZipFile
 import os 
 import xml.etree.ElementTree as ET
 
-epub_path = "/home/toheed/Projects/epub_parse/linear-algebra.epub"
+epub_path = "/home/toheed/Projects/epub_parse/moby-dick.epub"
 if not epub_path:
     epub_path = str(input('Input ePub path: '))   
 
@@ -29,7 +29,7 @@ def get_opf_path(path):
                 with open(file) as f:
                     c_xml = f.read()
             else:
-                print('container.xml file missing')
+                print('<Down>container.xml file missing')
 
         # parsing opf path from xml
         root = ET.fromstring(c_xml)
@@ -77,9 +77,15 @@ def get_spine(opf_data, root, namespaces):
     spine = root.find('opf:spine', namespaces)
 
     for item in spine:
-        id_ref = item.attrib['idref']
+        if 'linear' in item.keys() :
+            id_ref = item.attrib['idref']
+            linear = item.attrib['linear']
+            print(id_ref, linear)
+        else:
+            id_ref = item.attrib['idref']    
+            print(id_ref)
 
-        print(id_ref)
+        
 
 
 # func calls 

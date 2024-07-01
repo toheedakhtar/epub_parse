@@ -37,10 +37,13 @@
 1 / July / 2024
 
 [x] find a way to render xhtml of epub.
-[] structure epub.py
+[x] structure epub.py
 	[x] path
 	[x] opf path
 	[x] content dir
 	[x] metadata, 
-	[] manifest, spine
-	[] all text of epub
+	[x] manifest 
+	[x] spine
+
+[x] check code for other epub
+[] all text of epub
