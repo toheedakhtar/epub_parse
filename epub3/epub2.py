@@ -2,7 +2,7 @@ from zipfile import ZipFile
 import os 
 import xml.etree.ElementTree as ET
 
-epub_path = "/home/toheed/Projects/epub_parse/moby-dick.epub"
+epub_path = "/home/toheed/Projects/epub_parse/linear-algebra.epub"
 if not epub_path:
     epub_path = str(input('Input ePub path: '))   
 
@@ -24,22 +24,46 @@ def get_opf_path(path):
             if end[1] == 'xml':
 
                 with open(file) as f:
-                    data = f.read()
+                    c_xml = f.read()
             else:
                 print('container.xml file missing')
 
         # parsing opf path from xml
-        root = ET.fromstring(data)
+        root = ET.fromstring(c_xml)
         namespace = {'ns': 'urn:oasis:names:tc:opendocument:xmlns:container'} 
         full_path = root.find('.//ns:rootfile', namespace).attrib['full-path'] 
-        content_dir = epub_name + '/' + full_path.split('/')[0]
-
-        return full_path , content_dir
+                
+        # exit from META-INF to parent-dir where epub is extracted
+        extr_dir = os.path.dirname(os.getcwd())
+        
+        return extr_dir, full_path 
 
     else:
         print('no META-INF directory')
 
-print(get_opf_path(epub_path))
+
+def get_metadata(extr_dir , full_path):
+    opf_path = extr_dir + '/' + full_path
+
+    with open(opf_path) as opf:
+        opf_data = opf.read()
+    
+    root = ET.fromstring(opf_data)
+    # Define namespaces
+    namespaces = {'opf': 'http://www.idpf.org/2007/opf','dc': 'http://purl.org/dc/elements/1.1/'}
+
+    # parsing metadata elements
+    metadata = root.find('opf:metadata', namespaces)
+    title = metadata.find('dc:title', namespaces).text
+    creator = metadata.find('dc:creator', namespaces).text
+    identifier = metadata.find('dc:identifier',namespaces).text
+
+    print(f"Title : {title}\nCreator : {creator}\nIdentifier : {identifier}")
+
+    
+
+extr_dir, full_path = get_opf_path(epub_path)
+get_metadata(extr_dir , full_path)
 
 '''
 # getting to ocf file
@@ -68,52 +92,6 @@ if 'META-INF' in md_dir:
             # print(file)    # container.xml
             with open(file) as f:
                 data = f.read()
-
-
-#xml
-# getting .ocf path from container
-root = ET.fromstring(str(data))
-# Define the namespace
-namespace = {'ns': 'urn:oasis:names:tc:opendocument:xmlns:container'}
-# Find the rootfile element and extract the full-path attribute value
-full_path = root.find('.//ns:rootfile', namespace).attrib['full-path']
-
-content_dir = main_path + epub_name + '/' + full_path.split('/')[0]
-
-opf_path_extract = dir_name + '/' + full_path   # inside extracted epub  
-#print(opf_path_extract)
-
-opf_path_dir = main_path + opf_path_extract          # from main path
-#print(opf_path_dir)
-
-with open(opf_path_dir) as opf:
-    data = opf.read()                       # opf xml
-
-
-# parsing metadata (title, creator, id) from opf
-
-root = ET.fromstring(data)
-
-# Define namespaces
-namespaces = {
-    'opf': 'http://www.idpf.org/2007/opf',
-    'dc': 'http://purl.org/dc/elements/1.1/'
-}
-
-# Find metadata element
-metadata = root.find('opf:metadata', namespaces)
-print('\n\n')
-# Extract title, creator, identifier
-print('METADATA.....\n')
-title = metadata.find('dc:title', namespaces).text
-creator = metadata.find('dc:creator', namespaces).text
-identifier = metadata.find('dc:identifier', namespaces).text
-
-# Print metadata
-print(f"Title: {title}")
-print(f"Creator: {creator}")
-print(f"Identifier: {identifier}")
-print('\n\n')
 
 
 # parsing manifest 
