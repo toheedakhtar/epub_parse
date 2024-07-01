@@ -41,5 +41,6 @@
 	[x] path
 	[x] opf path
 	[x] content dir
-	[] metadata, manifest, spine
+	[x] metadata, 
+	[] manifest, spine
 	[] all text of epub

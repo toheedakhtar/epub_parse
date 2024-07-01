@@ -90,8 +90,8 @@ for item in manifest:
 
     if media_type == 'application/xhtml+xml':
         ch_path = content_dir + '/' + href
-        print(ch_path)
-        print('\n')
+        #print(ch_path)
+        #print('\n')
         with open(ch_path) as xhtml_f:
             ch_text = xhtml_f.read()
         
@@ -105,31 +105,32 @@ for item in manifest:
         # If body found
         if body is not None:
             inner_text = ET.tostring(body, encoding='unicode', method='text')
-            print(inner_text)
+#            print(inner_text)
         else:
             print("No <body> element found in the XML content.")
         
 
 
-        print('\n')
+#        print('\n')
     
 #        break;
-    # print(f"Item ID: {item_id}, Href: {href}, Media Type: {media_type}, Properties: {properties}")
+#     print(f"Item ID: {item_id}, Href: {href}, Media Type: {media_type}, Properties: {properties}")
 
-    # testing xhtml rendering 
+#     testing xhtml rendering 
     
 
-print('\n\n')
+#print('\n\n')
 
 # parsing spine 
-#print('PRINTING SPINE.......\n')
-#spine = root.find('opf:spine', namespaces)
-
+spine = root.find('opf:spine', namespaces)
+print(spine)
+spine_ids = [item.get('idref') for item in spine]
+print("Spine items:", spine_ids)
 #for itemref in spine:
-#   idref = itemref.attrib['idref']
-#    linear = itemref.attrib.get('linear', 'yes')  # default value for linear attribute is 'yes'
+    #idref = itemref.attrib['idref']
+    #linear = itemref.attrib.get('linear', 'yes')  # default value for linear attribute is 'yes'
 
-#    print(f"Itemref ID: {idref}, Linear: {linear}")
+    #print(f"Itemref ID: {idref}, Linear: {linear}")
 
 
 
