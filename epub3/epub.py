@@ -5,7 +5,7 @@ import xml.etree.ElementTree as ET
 # getting to ocf file
 
 main_path = '/home/toheed/Projects/epub_parse/epub3/'   # where epub is stored
-epub_path = '/home/toheed/Projects/epub_parse/moby-dick.epub'   # epub path
+epub_path = '/home/toheed/Projects/epub_parse/linear-algebra.epub'   # epub path
 epub_name = epub_path.split('/')[-1].split('.')[0]      # epub name
 
 # unzipping epub file
@@ -26,7 +26,7 @@ if 'META-INF' in md_dir:
     for file in os.listdir(curr_dir):
         end = file.split('.')
         if end[1] == 'xml':
-            print(file)
+            # print(file)    # container.xml
             with open(file) as f:
                 data = f.read()
 
@@ -39,6 +39,7 @@ namespace = {'ns': 'urn:oasis:names:tc:opendocument:xmlns:container'}
 # Find the rootfile element and extract the full-path attribute value
 full_path = root.find('.//ns:rootfile', namespace).attrib['full-path']
 
+content_dir = main_path + epub_name + '/' + full_path.split('/')[0]
 
 opf_path_extract = dir_name + '/' + full_path   # inside extracted epub  
 #print(opf_path_extract)
@@ -64,7 +65,7 @@ namespaces = {
 metadata = root.find('opf:metadata', namespaces)
 print('\n\n')
 # Extract title, creator, identifier
-print('PRINTING METADATA.............\n')
+print('METADATA.....\n')
 title = metadata.find('dc:title', namespaces).text
 creator = metadata.find('dc:creator', namespaces).text
 identifier = metadata.find('dc:identifier', namespaces).text
@@ -77,7 +78,6 @@ print('\n\n')
 
 
 # parsing manifest 
-print('PRINTING MANIFEST..........\n')
 # finding the manifest section
 manifest = root.find('opf:manifest', namespaces)
 
@@ -88,19 +88,48 @@ for item in manifest:
     media_type = item.attrib['media-type']
     properties = item.attrib.get('properties', '')
 
-    print(f"Item ID: {item_id}, Href: {href}, Media Type: {media_type}, Properties: {properties}")
+    if media_type == 'application/xhtml+xml':
+        ch_path = content_dir + '/' + href
+        print(ch_path)
+        print('\n')
+        with open(ch_path) as xhtml_f:
+            ch_text = xhtml_f.read()
+        
+        #parsing text from xhtml
+
+        root = ET.fromstring(ch_text)
+
+        # finding the body element
+        body = root.find('.//{http://www.w3.org/1999/xhtml}body')
+
+        # If body found
+        if body is not None:
+            inner_text = ET.tostring(body, encoding='unicode', method='text')
+            print(inner_text)
+        else:
+            print("No <body> element found in the XML content.")
+        
+
+
+        print('\n')
+    
+#        break;
+    # print(f"Item ID: {item_id}, Href: {href}, Media Type: {media_type}, Properties: {properties}")
+
+    # testing xhtml rendering 
+    
 
 print('\n\n')
 
 # parsing spine 
-print('PRINTING SPINE.......\n')
-spine = root.find('opf:spine', namespaces)
+#print('PRINTING SPINE.......\n')
+#spine = root.find('opf:spine', namespaces)
 
-for itemref in spine:
-    idref = itemref.attrib['idref']
-    linear = itemref.attrib.get('linear', 'yes')  # default value for linear attribute is 'yes'
+#for itemref in spine:
+#   idref = itemref.attrib['idref']
+#    linear = itemref.attrib.get('linear', 'yes')  # default value for linear attribute is 'yes'
 
-    print(f"Itemref ID: {idref}, Linear: {linear}")
+#    print(f"Itemref ID: {idref}, Linear: {linear}")
 
 
 

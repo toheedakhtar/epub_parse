@@ -32,3 +32,8 @@
 [x] try parsing manifest of other epub
 [x] parse spine
 [x] parse spine of other epub
+
+
+1 / July / 2024
+
+[x] find a way to render xhtml of epub.
