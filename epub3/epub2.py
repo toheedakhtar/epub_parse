@@ -120,30 +120,45 @@ def get_spine(opf_data, root, namespaces):
             spine_items.append(spine_item)
             
 
-        
-def get_text(metadata, manifest, content_path):
-    #printing info about epubs
-    #for item in metadata:
-    #    for key, value in item.items():
-    #        print(f"{key.capitalize()} : {value}")
-
-    
-    #priting chapter text
+def get_chapter_path(content_path, manifest):
+    chapter_paths = []
     for item in manifest:
         if 'media_type' in item and item['media_type'] == 'application/xhtml+xml':
-            chapter_url = content_path + item['href']
+            chapter_path = content_path + item['href']
+            chapter_paths.append(chapter_path)
+            
+    return chapter_paths
 
-            with open(chapter_url) as chapter:
+        
+def get_text(chapter_urls):
+    
+    inner_text = ""
+    for chapter_url in chapter_urls:
+            
+        with open(chapter_url) as chapter:
                 ch_text = chapter.read()
                 root = ET.fromstring(ch_text)
                 body = root.find('.//{http://www.w3.org/1999/xhtml}body')
 
                 if body is not None:
-                    inner_text = ET.tostring(body, encoding='unicode', method='text')
-                    print(inner_text)
+                    inner_text += ET.tostring(body, encoding='unicode', method='text')
                 else:
                     print('no <chapter_text>')
+    return inner_text
 
+def get_html(chapter_urls):
+    inner_html = " "
+    for chapter_url in chapter_urls:
+            with open(chapter_url) as chapter:
+                ch_text = chapter.read()
+                root = ET.fromstring(ch_text)
+                body = root.find('.//{http://www.w3.org/1999/xhtml}body')
+                print('\n')
+                print('body :', body)
+                if body is not None:
+                    inner_html += ET.tostring(body, encoding='unicode', method='html')
+                break    
+    return inner_html
 
 
 # func calls 
@@ -154,4 +169,8 @@ root = ET.fromstring(opf_data)
 metadata = get_metadata(opf_data, root, namespaces)
 manifest = get_manifest(opf_data, root , namespaces)
 spine = get_spine(opf_data, root, namespaces)
-get_text(metadata, manifest, content_path)
+chapter_urls = get_chapter_path(content_path, manifest)
+get_text(chapter_urls)
+#print(get_html(chapter_urls))
+
+

@@ -48,3 +48,9 @@
 [x] check code for other epub
 [x] store all data in proper format (list of dicts)
 [x] get proper text of epub
+
+
+2 / July / 2024
+
+[] Get html from epub
+[] render html to webpage browser
