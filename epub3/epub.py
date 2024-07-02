@@ -2,146 +2,182 @@ from zipfile import ZipFile
 import os 
 import xml.etree.ElementTree as ET
 
-# getting to ocf file
-
-main_path = '/home/toheed/Projects/epub_parse/epub3/'   # where epub is stored
-epub_path = '/home/toheed/Projects/epub_parse/linear-algebra.epub'   # epub path
-epub_name = epub_path.split('/')[-1].split('.')[0]      # epub name
-
-# unzipping epub file
-
-with ZipFile(epub_path) as zipobj:
-    zipobj.extractall(path = str(epub_name))
-
-dir_name = epub_name            # where epub is extracted , rn where epub is
-
-md_dir = os.listdir(dir_name)
-if 'META-INF' in md_dir:
-    os.chdir(dir_name + '/META-INF')
-
-    curr_dir = os.getcwd()      #inside META-INF
-    #print(curr_dir)
-    # print(os.listdir(curr_dir))
-
-    for file in os.listdir(curr_dir):
-        end = file.split('.')
-        if end[1] == 'xml':
-            # print(file)    # container.xml
-            with open(file) as f:
-                data = f.read()
+epub_path = ""
+if not epub_path:
+    while True:
+        epub_path = str(input('Input ePub path: '))   
+        try:
+            if epub_path.split('.')[1] == 'epub':
+                break
+        except:
+            print('not an epub')
 
 
-#xml
-# getting .ocf path from container
-root = ET.fromstring(str(data))
-# Define the namespace
-namespace = {'ns': 'urn:oasis:names:tc:opendocument:xmlns:container'}
-# Find the rootfile element and extract the full-path attribute value
-full_path = root.find('.//ns:rootfile', namespace).attrib['full-path']
-
-content_dir = main_path + epub_name + '/' + full_path.split('/')[0]
-
-opf_path_extract = dir_name + '/' + full_path   # inside extracted epub  
-#print(opf_path_extract)
-
-opf_path_dir = main_path + opf_path_extract          # from main path
-#print(opf_path_dir)
-
-with open(opf_path_dir) as opf:
-    data = opf.read()                       # opf xml
+#namespaces or xml parsing of ocf data
+namespaces = {'opf': 'http://www.idpf.org/2007/opf','dc': 'http://purl.org/dc/elements/1.1/'}
 
 
-# parsing metadata (title, creator, id) from opf
+# fetching opf from epub's META-INF
+def get_opf_path(path):
+    epub_name = path.split('/')[-1].split('.')[0]
+    
+    #unzipping epub
+    with ZipFile(epub_path) as zipobj:
+        zipobj.extractall(path = str(epub_name))
 
-root = ET.fromstring(data)
+    dir_name = epub_name
+    md_dir = os.listdir(dir_name)
+    if 'META-INF' in md_dir :
+        os.chdir(dir_name + '/META-INF')
+        curr_dir = os.getcwd()
+        for file in os.listdir(curr_dir):
+            end = file.split('.')
+            if end[1] == 'xml':
 
-# Define namespaces
-namespaces = {
-    'opf': 'http://www.idpf.org/2007/opf',
-    'dc': 'http://purl.org/dc/elements/1.1/'
-}
+                with open(file) as f:
+                    c_xml = f.read()
+            else:
+                print('container.xml file missing')
 
-# Find metadata element
-metadata = root.find('opf:metadata', namespaces)
-print('\n\n')
-# Extract title, creator, identifier
-print('METADATA.....\n')
-title = metadata.find('dc:title', namespaces).text
-creator = metadata.find('dc:creator', namespaces).text
-identifier = metadata.find('dc:identifier', namespaces).text
-
-# Print metadata
-print(f"Title: {title}")
-print(f"Creator: {creator}")
-print(f"Identifier: {identifier}")
-print('\n\n')
-
-
-# parsing manifest 
-# finding the manifest section
-manifest = root.find('opf:manifest', namespaces)
-
-# Iterate over each item in the manifest
-for item in manifest:
-    href = item.attrib['href']
-    item_id = item.attrib['id']
-    media_type = item.attrib['media-type']
-    properties = item.attrib.get('properties', '')
-
-    if media_type == 'application/xhtml+xml':
-        ch_path = content_dir + '/' + href
-        #print(ch_path)
-        #print('\n')
-        with open(ch_path) as xhtml_f:
-            ch_text = xhtml_f.read()
+        # parsing opf path from xml
+        root = ET.fromstring(c_xml)
+        namespace = {'ns': 'urn:oasis:names:tc:opendocument:xmlns:container'} 
+        full_path = root.find('.//ns:rootfile', namespace).attrib['full-path'] 
+                
+        # exit from META-INF to parent-dir where epub is extracted
+        extr_dir = os.path.dirname(os.getcwd()) # where epub is extracted / unzipped
+        opf_path = extr_dir + '/' +full_path   # path to package.opf file
         
-        #parsing text from xhtml
+        sep = '/'
+        content_path = sep.join(opf_path.split('/')[:-1]) + '/'
 
-        root = ET.fromstring(ch_text)
+        return opf_path , content_path
 
-        # finding the body element
-        body = root.find('.//{http://www.w3.org/1999/xhtml}body')
+    else:
+        print('no META-INF directory')
 
-        # If body found
-        if body is not None:
-            inner_text = ET.tostring(body, encoding='unicode', method='text')
-#            print(inner_text)
+def get_opf_data(opf_path):
+    with open(opf_path) as opf:
+        opf_data = opf.read()
+        return opf_data
+
+def get_metadata(opf_data, root, namespaces):
+    metadata_items = []
+    # parsing metadata elements
+    metadata = root.find('opf:metadata', namespaces)
+    title = metadata.find('dc:title', namespaces).text
+    creator = metadata.find('dc:creator', namespaces).text
+    identifier = metadata.find('dc:identifier',namespaces).text
+    
+    metadata_item = {
+            'title':title,
+            'creator':creator,
+            'identifier': identifier
+            }
+
+    metadata_items.append(metadata_item)
+    
+    return metadata_items
+    
+
+def get_manifest(opf_data, root , namespaces):
+    manifest_items = []
+
+    manifest = root.find('opf:manifest', namespaces)
+
+    for item in manifest:
+        href = item.attrib['href']
+        item_id = item.attrib['id']
+        media_type = item.attrib['media-type']
+        properties = item.attrib.get('properties', '')
+        
+        item_data = {
+                'href' : href,
+                'item_id': item_id,
+                'media_type' : media_type,
+                'properties' : properties
+                }
+
+        manifest_items.append(item_data)
+        #print(item_data)
+    
+    return manifest_items
+
+
+def get_spine(opf_data, root, namespaces):
+    spine_items = []
+    
+    spine = root.find('opf:spine', namespaces)
+
+    for item in spine:
+        if 'linear' in item.keys() :
+            id_ref = item.attrib['idref']
+            linear = item.attrib['linear']
+            spine_item = {
+                    'id_ref' : id_ref,
+                    'linear' : linear
+                    }
+            spine_items.append(spine_item)
+            #print(spine_item)
         else:
-            print("No <body> element found in the XML content.")
+            id_ref = item.attrib['idref']    
+            spine_item = {
+                    'id_ref': id_ref,
+                    }
+            spine_items.append(spine_item)
+            
+
+def get_chapter_path(content_path, manifest):
+    chapter_paths = []
+    for item in manifest:
+        if 'media_type' in item and item['media_type'] == 'application/xhtml+xml':
+            chapter_path = content_path + item['href']
+            chapter_paths.append(chapter_path)
+            
+    return chapter_paths
+
         
-
-
-#        print('\n')
+def get_text(chapter_urls):
     
-#        break;
-#     print(f"Item ID: {item_id}, Href: {href}, Media Type: {media_type}, Properties: {properties}")
+    inner_text = ""
+    for chapter_url in chapter_urls:
+            
+        with open(chapter_url) as chapter:
+                ch_xml = chapter.read()
+                root = ET.fromstring(ch_xml)
+                body = root.find('.//{http://www.w3.org/1999/xhtml}body')
 
-#     testing xhtml rendering 
+                if body is not None:
+                    inner_text += ET.tostring(body, encoding='unicode', method='text')
+                else:
+                    print('no <chapter_text>')
+    return inner_text
+
+
+if __name__ == "__main__":
     
+    #epub_path = str(input("Enter ePub path: "))
+    opf_path , content_path = get_opf_path(epub_path)
+    opf_data = get_opf_data(opf_path)
+    root = ET.fromstring(opf_data)
+    
+    while True:
+        opt = int(input("\nEnter to:\n1 - Info about epub\n2 - Read ePub\n3 - Exit\n\n"))
 
-#print('\n\n')
-
-# parsing spine 
-spine = root.find('opf:spine', namespaces)
-print(spine)
-spine_ids = [item.get('idref') for item in spine]
-print("Spine items:", spine_ids)
-#for itemref in spine:
-    #idref = itemref.attrib['idref']
-    #linear = itemref.attrib.get('linear', 'yes')  # default value for linear attribute is 'yes'
-
-    #print(f"Itemref ID: {idref}, Linear: {linear}")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        match opt :
+            case 1:
+                res = get_metadata(opf_data, root, namespaces)
+                for item in res:
+                    for key, value in item.items():
+                        print(f'{key} : {value} \n')
+            
+            case 2:
+                manifest = get_manifest(opf_data, root, namespaces)
+                chapter_urls = get_chapter_path(content_path, manifest)
+                print(get_text(chapter_urls) , '\n')
+            
+            case 3:
+                print('exiting...\n')
+                break;
+            case _:
+                print('Invalid choice...\n')
