@@ -10,7 +10,7 @@
 ### Usage 
 - `git clone` the repo
 
-- You can use the following fucntions to:
+- You can use the following functions to:
 
 	- `get_opf_path()` 	- returns opf path from conatiner.xml file
 	- `get_opf_data()` 	- returns package.opf data
@@ -22,3 +22,4 @@
 
 - if your run `epub.py` as script you can read epub or see its metadata.
 
+The 2 epubs were freely available on the web.
