@@ -22,4 +22,4 @@
 
 - if your run `epub.py` as script you can read epub or see its metadata.
 
-The 2 epubs were freely available on the web.
+Epub-Usage - The 2 epubs used are listed and were freely available on the web.
