@@ -10,6 +10,13 @@
 ### Usage 
 - `git clone` the repo
 
+#### Run as a script
+
+- `cd epub_parse/epub3`
+- `python3 epub.py` to run the script
+- if your run `epub.py` as script you can read epub or its metadata.
+
+#### Use as a module
 - You can use the following functions to:
 
 	- `get_opf_path()` 	- returns opf path from conatiner.xml file
@@ -20,6 +27,5 @@
 	- `get_chapter_path()` 	- returns path to all chapters
 	- `get_text()`		- returns full text of epub
 
-- if your run `epub.py` as script you can read epub or see its metadata.
 
 Epub-Usage - The 2 epubs used are listed and were freely available on the web.
