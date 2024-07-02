@@ -30,7 +30,7 @@ def get_opf_path(path):
                 with open(file) as f:
                     c_xml = f.read()
             else:
-                print('<Down>container.xml file missing')
+                print('container.xml file missing')
 
         # parsing opf path from xml
         root = ET.fromstring(c_xml)
@@ -136,8 +136,8 @@ def get_text(chapter_urls):
     for chapter_url in chapter_urls:
             
         with open(chapter_url) as chapter:
-                ch_text = chapter.read()
-                root = ET.fromstring(ch_text)
+                ch_xml = chapter.read()
+                root = ET.fromstring(ch_xml)
                 body = root.find('.//{http://www.w3.org/1999/xhtml}body')
 
                 if body is not None:
@@ -146,31 +146,35 @@ def get_text(chapter_urls):
                     print('no <chapter_text>')
     return inner_text
 
-def get_html(chapter_urls):
-    inner_html = " "
-    for chapter_url in chapter_urls:
-            with open(chapter_url) as chapter:
-                ch_text = chapter.read()
-                root = ET.fromstring(ch_text)
-                body = root.find('.//{http://www.w3.org/1999/xhtml}body')
-                print('\n')
-                print('body :', body)
-                if body is not None:
-                    inner_html += ET.tostring(body, encoding='unicode', method='html')
-                break    
-    return inner_html
 
+if __name__ == "__main__":
+    
+    #epub_path = str(input("Enter ePub path: "))
+    opf_path , content_path = get_opf_path(epub_path)
+    opf_data = get_opf_data(opf_path)
+    root = ET.fromstring(opf_data)
 
+    opt = int(input("Enter opertation you want to perform:\n1. Info about epub\n2. Read ePub\n"))
+
+    match opt :
+        case 1:
+            res = get_metadata(opf_data, root, namespaces)
+            print(res)
+        case 2:
+            manifest = get_manifest(opf_data, root, namespaces)
+            chapter_urls = get_chapter_path(content_path, manifest)
+            print(get_text(chapter_urls))
+    
 # func calls 
-opf_path, content_path = get_opf_path(epub_path)
-opf_data = get_opf_data(opf_path)
-root = ET.fromstring(opf_data)
+#opf_path, content_path = get_opf_path(epub_path)
+#opf_data = get_opf_data(opf_path)
+#root = ET.fromstring(opf_data)
 
-metadata = get_metadata(opf_data, root, namespaces)
-manifest = get_manifest(opf_data, root , namespaces)
-spine = get_spine(opf_data, root, namespaces)
-chapter_urls = get_chapter_path(content_path, manifest)
-get_text(chapter_urls)
-#print(get_html(chapter_urls))
+#metadata = get_metadata(opf_data, root, namespaces)
+#manifest = get_manifest(opf_data, root , namespaces)
+#spine = get_spine(opf_data, root, namespaces)
+#chapter_urls = get_chapter_path(content_path, manifest)
+#get_text(chapter_urls)
+#get_html(chapter_urls)
 
 
