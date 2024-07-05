@@ -1,6 +1,6 @@
 # epub parser + reader in python
 
-"note : raw code, without proper OOP structuring, but works"
+> note : raw code, without proper OOP structuring, but works
 
 ### Features
 - does not use external libraries
