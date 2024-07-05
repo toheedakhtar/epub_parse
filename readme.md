@@ -8,7 +8,7 @@
 - gives chapters path
 
 ### Usage 
-- `git clone` the repo
+- ```git clone``` the repo
 
 #### Run as a script
 
